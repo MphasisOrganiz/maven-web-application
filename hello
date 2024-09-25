@@ -1,48 +1,43 @@
 pipeline {
     agent any
     parameters {
-        choice(name:"environment", choices:["dev",'test','master'], description:'select the environment')
-    }
-    stage{
-        steps{
-            script {
-                def branch=""
-                if(params.environment=='dev'){branch='dev'}
-            }
-        }
+        choice(name: 'Environment', choices: ['Dev', 'Test', 'Prod'], description: 'Select the environment for deployment')
     }
     stages {
-        stage ('git') {
+        stage("Set Branch") {
             steps {
-                git branch: 'master', credentialsId: 'ad4492e5-4800-4264-9358-e51e45a8cb3c', url: 'https://github.com/MphasisOrganiz/maven-web-application.git'
-            }
-            
-        }
-        stage ('mvn') {
-            steps {
-                sh "mvn package"
-            }
-            
-        }
-        stage ('docker'){
-            steps {
-                sh "docker build -t sayyid786/img:1.1.1.1 ."
+                script {
+                    def branch = ""
+                    if (params.Environment == "Dev") {
+                        branch = 'DEV'
+                    } 
+                }
             }
         }
-        stage ('docker login'){
+        stage("Git Checkout") {
             steps {
-                sh "docker login -u sayyid786 -p Evolution@4"
+                git credentialsId: '4bf40e82-8a73-4451-aa0a-7ede24dc02be', url: 'https://github.com/doc-vans/maven-web-application.git'
             }
         }
-        stage ('docker run'){
+        stage("Build Package") {
             steps {
-                sh "docker run -d --name container2 img:1.1.1.1"
+                sh 'mvn clean package'
             }
         }
-        
-        
-        
-        
-        
+        stage("Docker Build") {
+            steps {
+                sh 'docker build -t kalyan5629/impage1:1.0 .'
+            }
+        }
+        stage("Docker Login") {
+            steps {
+                sh 'docker login -u kalyan5629 -p dckr_pat_KF7Qm5l5pFWhTZq6Zt1Y246G-o0'
+            }
+        }
+        stage("Docker Run") {
+            steps {
+                sh 'docker run -d kalyan5629/impage1:1.0'
+            }
+        }
     }
 }
