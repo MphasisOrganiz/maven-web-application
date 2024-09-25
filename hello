@@ -1,4 +1,9 @@
-stage{
+pipeline {
+    agent any
+    parameters {
+        choice(name:"environment", choices:["dev",'test','master'], description:'select the environment')
+    }
+    stage{
         steps{
             script {
                 def branch=""
@@ -6,3 +11,38 @@ stage{
             }
         }
     }
+    stages {
+        stage ('git') {
+            steps {
+                git branch: 'master', credentialsId: 'ad4492e5-4800-4264-9358-e51e45a8cb3c', url: 'https://github.com/MphasisOrganiz/maven-web-application.git'
+            }
+            
+        }
+        stage ('mvn') {
+            steps {
+                sh "mvn package"
+            }
+            
+        }
+        stage ('docker'){
+            steps {
+                sh "docker build -t sayyid786/img:1.1.1.1 ."
+            }
+        }
+        stage ('docker login'){
+            steps {
+                sh "docker login -u sayyid786 -p Evolution@4"
+            }
+        }
+        stage ('docker run'){
+            steps {
+                sh "docker run -d --name container2 img:1.1.1.1"
+            }
+        }
+        
+        
+        
+        
+        
+    }
+}
