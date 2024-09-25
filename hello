@@ -41,3 +41,4 @@ pipeline {
         }
     }
 }
+git branch: 'master', credentialsId: 'ad4492e5-4800-4264-9358-e51e45a8cb3c', url: 'https://github.com/MphasisOrganiz/maven-web-application.git'
