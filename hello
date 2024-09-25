@@ -1,0 +1,8 @@
+stage{
+        steps{
+            script {
+                def branch=""
+                if(params.environment=='dev'){branch='dev'}
+            }
+        }
+    }
